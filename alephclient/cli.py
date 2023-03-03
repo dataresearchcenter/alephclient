@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 import click
+from requests import HTTPError
 
 from alephclient import settings
 from alephclient.api import AlephAPI
@@ -371,6 +372,8 @@ def _load_catalog(
             )
     except AlephException as exc:
         raise click.ClickException(exc.message)
+    except HTTPError as exc:
+        raise click.ClickException(str(exc))
     except BrokenPipeError:
         raise click.Abort()
 
