@@ -41,6 +41,7 @@ def load_catalog(
     exclude_datasets: Optional[List[str]] = [],
     include_datasets: Optional[List[str]] = [],
     frequency: Optional[str] = None,
+    skip_existing: Optional[bool] = False,
 ) -> Generator[Loader, None, None]:
     res = requests.get(url)
     if not res.ok:
@@ -60,6 +61,8 @@ def load_catalog(
             continue
 
         aleph_collection = api.get_collection_by_foreign_id(foreign_id)
+        if aleph_collection is not None and skip_existing:
+            continue
 
         publisher = ensure_dict(dataset.get("publisher"))
         description = ensure_str(dataset.get("description"))

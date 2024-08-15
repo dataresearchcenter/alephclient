@@ -342,6 +342,7 @@ def write_entities(
 @click.option("--frequency", help="Add frequency label to collections")
 @click.option("--exclude", help="Exclude dataset(s)", multiple=True)
 @click.option("--include", help="Include dataset(s)", multiple=True)
+@click.option("--skip-existing", is_flag=True, help="Skip already existing datasets", default=False)
 @click.pass_context
 def _load_catalog(
     ctx,
@@ -352,6 +353,7 @@ def _load_catalog(
     frequency=None,
     exclude=[],
     include=[],
+    skip_existing=False,
 ):
     """Import a catalog from a given url"""
     api = ctx.obj["api"]
@@ -362,6 +364,7 @@ def _load_catalog(
             exclude_datasets=exclude,
             include_datasets=include,
             frequency=frequency,
+            skip_existing=skip_existing,
         ):
             api.write_entities(
                 collection_id,
