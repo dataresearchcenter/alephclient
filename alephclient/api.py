@@ -87,7 +87,6 @@ class AlephAPI(object):
         session_id: Optional[str] = None,
         retries: int = settings.MAX_TRIES,
     ):
-
         if not host:
             raise AlephException("No host environment variable found")
         self.base_url = urljoin(host, "/api/2/")
@@ -219,6 +218,11 @@ class AlephAPI(object):
         params = {"sync": sync, "keep_metadata": True}
         url = self._make_url(f"collections/{collection_id}", params=params)
         return self._request("DELETE", url)
+
+    def touch_collection(self, collection_id: str):
+        """Update the content update date of a collection by ID"""
+        url = self._make_url(f"collections/{collection_id}/touch")
+        return self._request("POST", url)
 
     def get_entity(self, entity_id: str, publisher: bool = False) -> Dict:
         """Get a single entity by ID."""

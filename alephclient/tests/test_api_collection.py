@@ -1,7 +1,7 @@
 import pytest
 from requests import Response
 from alephclient.errors import AlephException
-from alephclient.api import AlephAPI, APIResultSet
+from alephclient.api import AlephAPI
 
 
 @pytest.fixture
@@ -23,7 +23,8 @@ class TestApiCollection:
         collection_id = "8"
 
         mocker.patch.object(
-            self.api.session, "request",
+            self.api.session,
+            "request",
             return_value=http_error_response,
         )
 
@@ -48,6 +49,9 @@ class TestApiCollection:
         pass
 
     def test_flush_collection(self, mocker):
+        pass
+
+    def test_touch_collection(self, mocker):
         pass
 
     def test_get_collection_by_foreign_id(self, mocker):

@@ -1,7 +1,6 @@
 import json
 import logging
 import sys
-from pathlib import Path
 
 import click
 from requests import HTTPError
@@ -216,6 +215,19 @@ def flush_collection(ctx, foreign_id, sync=False):
         raise click.ClickException(exc.message)
 
 
+@cli.command("touch")
+@click.option("-f", "--foreign-id", required=True, help="foreign_id of the collection")
+@click.pass_context
+def touch_collection(ctx, foreign_id):
+    """Update a collection's content update date."""
+    api = ctx.obj["api"]
+    try:
+        collection_id = _get_id_from_foreign_key(api, foreign_id)
+        api.touch_collection(collection_id)
+    except AlephException as exc:
+        raise click.ClickException(exc.message)
+
+
 @cli.command("write-entity")
 @click.option("-i", "--infile", type=click.File("r"), default="-")
 @click.option("-f", "--foreign-id", required=True, help="foreign_id of the collection")
@@ -246,7 +258,7 @@ def write_entity(ctx, infile, foreign_id):
 @click.pass_context
 def delete_entity(ctx, entity_id):
     """Delete a single entity from standard input"""
-    api = ctx.obj['api']
+    api = ctx.obj["api"]
     entity_id = entity_id.strip()
     try:
         api.delete_entity(entity_id)
@@ -274,7 +286,10 @@ def delete_entity(ctx, entity_id):
     "--unsafe", is_flag=True, default=False, help="allow references to archive hashes"
 )
 @click.option(
-    "--cleaned", is_flag=True, default=False, help="disable server-side validation for all types"
+    "--cleaned",
+    is_flag=True,
+    default=False,
+    help="disable server-side validation for all types",
 )
 @click.pass_context
 def write_entities(
@@ -285,7 +300,7 @@ def write_entities(
     chunksize=1000,
     force=False,
     unsafe=False,
-    cleaned=False
+    cleaned=False,
 ):
     """Read entities from standard input and index them."""
     api = ctx.obj["api"]
@@ -301,7 +316,10 @@ def write_entities(
                 count += 1
                 if count % chunksize == 0:
                     if sys.stdout.isatty():
-                        print(f"\r\x1b[K[{foreign_id}] Bulk load entities: {count:_}...", end='')
+                        print(
+                            f"\r\x1b[K[{foreign_id}] Bulk load entities: {count:_}...",
+                            end="",
+                        )
                     else:
                         log.info(f"[{foreign_id}] Bulk load entities: {count:_}...")
                 yield json.loads(line)
